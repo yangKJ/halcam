@@ -1,0 +1,7 @@
+# macOS 与 Python 本地产物
+.DS_Store
+__pycache__/
+*.pyc
+
+# 首页方向稿需用户审核，批准前不进入远端
+/preview/
