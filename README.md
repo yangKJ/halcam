@@ -4,6 +4,8 @@
 
 HAL 相机的独立官网仓库。公开页面由 GitHub Pages 从 `master` 分支的 `/docs` 发布，无需安装依赖或配置后台。
 
+HAL 的 Apple ID 为 `6834448406`，正式商店地址为 `https://apps.apple.com/app/id6834448406`。首页草稿已接入该地址及 Smart App Banner 元数据；商店尚未公开时继续显示“即将推出”，不代表已经可以下载。
+
 ## 公开页面
 
 | 页面 | 简体中文 | English |
@@ -16,16 +18,16 @@ HAL 相机的独立官网仓库。公开页面由 GitHub Pages 从 `master` 分�
 
 ## 内容维护
 
-- 隐私政策及用户协议的唯一正文源位于 HAL App 的 `Hal/Resources/Legal/`，网站导出相同正文；不要分别维护两套事实。
-- 支持正文位于 `content/support.zh-Hans.md`、`content/support.en.md`。
+- 三个页面的唯一正文源均位于 `content/`，分别使用 `privacy-policy`、`terms-of-service`、`support` 和 `zh-Hans`、`en` 后缀。
+- HAL App 通过系统内置浏览器打开对应语言的公开页面，不再打包或维护协议副本。
 - `docs/assets/pages.css` 是三个辅助页面的共用样式。
 - 页面不使用第三方字体、分析或广告脚本。
 
 在官网仓库目录更新并核对导出页面：
 
 ```sh
-python3 tools/sync_pages.py ../Hal/Resources/Legal
-python3 tools/sync_pages.py ../Hal/Resources/Legal --check
+python3 tools/sync_pages.py
+python3 tools/sync_pages.py --check
 python3 tools/check_pages.py
 ```
 

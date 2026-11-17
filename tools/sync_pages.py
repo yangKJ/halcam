@@ -5,7 +5,7 @@
 #  Created by Condy on 2026/11/17.
 #
 
-"""从 App 唯一法律正文及官网支持正文导出无依赖静态页面。"""
+"""从官网唯一正文源导出无依赖静态页面。"""
 
 import argparse
 import html
@@ -16,9 +16,9 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 BASE_URL = "https://yangkj.github.io/halcam"
 PAGES = {
-    "privacy-policy": ("Privacy", "隐私政策", "Privacy Policy"),
-    "terms-of-service": ("Terms", "用户协议", "Terms of Use"),
-    "support": ("Support", "技术支持", "Support"),
+    "privacy-policy": ("隐私政策", "Privacy Policy"),
+    "terms-of-service": ("用户协议", "Terms of Use"),
+    "support": ("技术支持", "Support"),
 }
 
 
@@ -65,14 +65,14 @@ def render_markdown(source):
 
 def page_html(slug, language, source):
     chinese = language == "zh"
-    title = PAGES[slug][1 if chinese else 2]
+    title = PAGES[slug][0 if chinese else 1]
     other = "en" if chinese else "zh"
     body, headings = render_markdown(source)
     introduction, sections = body.split("<h2", 1)
     sections = "<h2" + sections
     nav = "\n".join(
         f'<a href="{key}.html"' + (' aria-current="page"' if key == slug else "")
-        + f'>{values[1 if chinese else 2]}</a>'
+        + f'>{values[0 if chinese else 1]}</a>'
         for key, values in PAGES.items()
     )
     toc = "".join(f'<li><a href="#{anchor}">{html.escape(text)}</a></li>' for anchor, text in headings)
@@ -100,7 +100,7 @@ def page_html(slug, language, source):
         </nav>
     </header>
     <main id="main" class="document">
-        <p class="eyebrow">HAL CAM <span aria-hidden="true">/</span> {PAGES[slug][2].upper()}</p>
+        <p class="eyebrow">HAL CAM <span aria-hidden="true">/</span> {PAGES[slug][1].upper()}</p>
         <article>
             {introduction}
             <details class="contents"><summary>{'本页目录' if chinese else 'On this page'}</summary><ol>{toc}</ol></details>
@@ -119,13 +119,11 @@ def page_html(slug, language, source):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("legal_source", type=Path, help="HAL App 的 Resources/Legal 目录")
     parser.add_argument("--check", action="store_true", help="仅核对导出页面与正文一致")
     args = parser.parse_args()
     for language, suffix in [("zh", "zh-Hans"), ("en", "en")]:
-        for slug, values in PAGES.items():
-            source = (ROOT / "content" / f"support.{suffix}.md" if slug == "support"
-                      else args.legal_source / f"{values[0]}.{suffix}.md")
+        for slug in PAGES:
+            source = ROOT / "content" / f"{slug}.{suffix}.md"
             expected = page_html(slug, language, source.read_text(encoding="utf-8"))
             destination = ROOT / "docs" / language / f"{slug}.html"
             if args.check:
